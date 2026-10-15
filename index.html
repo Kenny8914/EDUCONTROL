@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduControl - Núcleo Educativo Las Gamas</title>
+
+
+<link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+<div id="toast-container" class="toast-container"></div>
+
+<!-- ============================================================
+     PANTALLA DE LOGIN (selección de rol) Inicioooj
+     ============================================================ -->
+<div id="login-screen" class="login-overlay">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="login-header-icon">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L2 8l10 5 10-5-10-5z"/><path d="M6 10.5V16c0 1.5 3 3 6 3s6-1.5 6-3v-5.5"/><path d="M22 8v6"/></svg>
+      </div>
+      <h1>EduControl<span class="tag">v3.1</span></h1>
+      <p>Gestión de Incidencias y Disciplina Escolar</p>
+    </div>
+    <div id="login-step-roles" class="login-roles">
+      <button class="role-btn" onclick="showLoginForm('docente')">
+        <span class="role-btn-left">
+          <span class="role-icon role-icon--docente">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>
+          </span>
+          <span class="role-text">
+            <strong>Panel Docente / Directivo</strong>
+            <small>Registro y seguimiento de casos</small>
+          </span>
+        </span>
+        <svg class="icon role-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <button class="role-btn" onclick="showLoginForm('padre')">
+        <span class="role-btn-left">
+          <span class="role-icon role-icon--padre">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 6h-3v10H6V9H3l9-6z"/></svg>
+          </span>
+          <span class="role-text">
+            <strong>Portal Padre / Apoderado</strong>
+            <small>Consulta y firma de notificaciones</small>
+          </span>
+        </span>
+        <svg class="icon role-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <button class="role-btn" onclick="showLoginForm('alumno')">
+        <span class="role-btn-left">
+          <span class="role-icon role-icon--alumno">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.2"/><path d="M5.5 21v-1.5a6.5 6.5 0 0113 0V21"/></svg>
+          </span>
+          <span class="role-text">
+            <strong>Portal Alumno</strong>
+            <small>Tu resumen de convivencia escolar</small>
+          </span>
+        </span>
+        <svg class="icon role-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <button class="role-btn" onclick="showLoginForm('admin')">
+        <span class="role-btn-left">
+          <span class="role-icon role-icon--admin">
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          </span>
+          <span class="role-text">
+            <strong>Administración</strong>
+            <small>Usuarios y alumnos del sistema</small>
+          </span>
+        </span>
+        <svg class="icon role-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+      <p class="login-hint">Elige tu perfil para iniciar sesión</p>
+    </div>
+    <form id="login-step-form" class="login-form hidden" onsubmit="submitLogin(event)" autocomplete="on">
+      <button type="button" class="login-back" onclick="backToRoles()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+        Cambiar perfil
+      </button>
+      <div class="login-role-tag">
+        <span id="login-role-icon" class="role-icon"></span>
+        <span class="role-text">
+          <strong id="login-role-title">-</strong>
+          <small id="login-role-desc">-</small>
+        </span>
+      </div>
+      <div class="form-group">
+        <label for="login-user">Usuario</label>
+        <input id="login-user" type="text" autocomplete="username" required autofocus>
+      </div>
+      <div class="form-group">
+        <label for="login-pass">Contraseña</label>
+        <input id="login-pass" type="password" autocomplete="current-password" required>
+      </div>
+      <div id="login-error" class="login-error hidden" role="alert"></div>
+      <button id="login-submit" class="btn btn-primary btn-block" type="submit">Iniciar Sesión</button>
+      <p class="login-hint">¿Olvidaste tu contraseña? Pídela a Administración.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     NAVBAR arribasA
+     ============================================================ -->
+<header class="navbar">
+  <div class="navbar-inner">
+    <div class="navbar-brand">
+      <div class="navbar-logo">
+        <svg class="icon" style="width:1.35rem;height:1.35rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/></svg>
+      </div>
+      <div>
+        <div class="navbar-title">EduControl<span class="tag">Enterprise</span></div>
+        <div class="navbar-subtitle">Núcleo Educativo Las Gamas</div>
+      </div>
+    </div>
+    <div class="navbar-actions">
+      <button class="btn-icon" onclick="toggleDarkMode()" title="Cambiar tema">
+        <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.5A9 9 0 1111.5 3 7 7 0 0021 12.5z"/></svg>
+        <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4 12H2M22 12h-2M5 5l1.4 1.4M17.6 17.6L19 19M19 5l-1.4 1.4M6.4 17.6L5 19"/></svg>
+      </button>
+      <div class="navbar-user">
+        <p id="user-display-name">-</p>
+        <p id="user-display-role">-</p>
+      </div>
+      <button class="btn btn-ghost" onclick="openPasswordModal(false)" title="Cambiar contraseña">Contraseña</button>
+      <button class="btn btn-ghost" onclick="logout()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><path d="M16 17l5-5-5-5M21 12H9"/></svg>
+        Cerrar Sesión
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- ============================================================
+       VISTA DOCENTE / DIRECTIVO
+       ============================================================ -->
+  <section id="docente-view" class="view hidden">
+    <div class="view-header">
+      <div>
+        <h2>Gestión de Incidencias</h2>
+        <p>Registro, seguimiento y auditoría de casos disciplinarios</p>
+      </div>
+      <div class="view-header-actions">
+        <button class="btn-text" onclick="exportJSONBackup()">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          Backup JSON
+        </button>
+        <button class="btn btn-success" onclick="exportCSV()">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M8 3v18M4 9h16M4 15h16"/></svg>
+          Exportar CSV
+        </button>
+        <button class="btn btn-primary" onclick="openCreateModal()">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>
+          Nueva Incidencia
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="card stat-card">
+        <div class="stat-icon stat-icon--blue"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg></div>
+        <div><div id="stat-total" class="stat-value">0</div><div class="stat-label">Total de Casos</div></div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon stat-icon--amber"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div><div id="stat-pending" class="stat-value">0</div><div class="stat-label">Pendientes de Firma</div></div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon stat-icon--purple"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 10h18"/></svg></div>
+        <div><div id="stat-citations" class="stat-value">0</div><div class="stat-label">Citaciones Activas</div></div>
+      </div>
+      <div class="card stat-card">
+        <div class="stat-icon stat-icon--emerald"><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <div><div id="stat-signed" class="stat-value">0</div><div class="stat-label">Resueltos / Firmados</div></div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="card chart-card">
+        <h3>Incidencias por Categoría</h3>
+        <div id="catChart" class="chart-body"></div>
+      </div>
+      <div class="card chart-card">
+        <h3>Incidencias por Gravedad</h3>
+        <div id="sevChart" class="chart-body"></div>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <div class="filter-search">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+        <input id="docente-search" type="text" placeholder="Buscar por alumno, ID o descripción..." oninput="renderDocenteView()">
+      </div>
+      <select id="docente-filter-course" onchange="renderDocenteView()">
+        <option value="">Todos los cursos</option>
+      </select>
+      <select id="docente-filter-severity" onchange="renderDocenteView()">
+        <option value="">Toda gravedad</option>
+        <option value="Leve">Leve</option>
+        <option value="Moderada">Moderada</option>
+        <option value="Grave">Grave</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th><th>Alumno</th><th>Curso</th><th>Categoría</th><th>Gravedad</th><th>Fecha</th><th>Estado</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="docente-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       VISTA PADRE / APODERADO
+       ============================================================ -->
+  <section id="padre-view" class="view hidden">
+    <div class="hero-banner hero-banner--padre">
+      <div>
+        <h2 id="padre-welcome">Bienvenido/a</h2>
+        <p id="padre-subtitle">Seguimiento de incidencias y citaciones</p>
+      </div>
+    </div>
+    <div id="padre-cards-container" class="cards-grid"></div>
+  </section>
+
+  <!-- ============================================================
+       VISTA ALUMNO
+       ============================================================ -->
+  <section id="alumno-view" class="view hidden">
+    <div class="hero-banner hero-banner--alumno">
+      <div>
+        <h2 id="alumno-welcome">Hola</h2>
+        <p>Este es tu resumen de convivencia escolar</p>
+      </div>
+      <div class="hero-score">
+        <div id="student-score-display" class="value">100</div>
+        <div class="label">Índice de Convivencia</div>
+        <div id="student-badge-display" class="score-badge">Excelente</div>
+      </div>
+    </div>
+    <div id="alumno-cards-container" class="cards-grid"></div>
+  </section>
+
+  <!-- ============================================================
+       VISTA ADMINISTRACIÓN
+       ============================================================ -->
+  <section id="admin-view" class="view hidden">
+    <div class="view-header">
+      <div>
+        <h2>Administración del Sistema</h2>
+        <p>Gestión de usuarios (docentes, apoderados, alumnos) y lista de estudiantes</p>
+      </div>
+    </div>
+    <div class="tabs">
+      <button id="tab-usuarios" class="tab-btn active" onclick="adminTab('usuarios')">Usuarios</button>
+      <button id="tab-alumnos" class="tab-btn" onclick="adminTab('alumnos')">Alumnos y cursos</button>
+    </div>
+
+    <div id="admin-panel-usuarios">
+      <div class="view-header-actions" style="margin-bottom:.75rem;">
+        <button class="btn btn-primary" onclick="openUserModal()">+ Nuevo usuario</button>
+        <button class="btn btn-success" onclick="openImportModal('usuarios')">Importar usuarios (CSV)</button>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-search">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="admin-user-search" type="text" placeholder="Buscar usuario o nombre..." oninput="renderAdminUsers()">
+        </div>
+        <select id="admin-user-role" onchange="renderAdminUsers()">
+          <option value="">Todos los perfiles</option>
+          <option value="admin">Administración</option>
+          <option value="docente">Docente / Directivo</option>
+          <option value="padre">Padre / Apoderado</option>
+          <option value="alumno">Alumno</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Usuario</th><th>Nombre</th><th>Perfil</th><th>Alumno(s) vinculado(s)</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="admin-users-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="admin-panel-alumnos" class="hidden">
+      <div class="view-header-actions" style="margin-bottom:.75rem;">
+        <button class="btn btn-success" onclick="openImportModal('estudiantes')">Importar alumnos (CSV)</button>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-search">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input id="admin-student-search" type="text" placeholder="Buscar por nombre, CI o curso..." oninput="renderAdminStudents()">
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>CI</th><th>Nombre</th><th>Curso</th></tr></thead>
+          <tbody id="admin-students-body"></tbody>
+        </table>
+      </div>
+      <p id="admin-students-count" class="note"></p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     MODAL: Crear / Ver Incidencia
+     ============================================================ -->
+<div id="incident-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg><span id="modal-title">Nueva Incidencia</span></h3>
+      <button class="modal-close" onclick="closeModal('incident-modal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="incident-form" onsubmit="saveIncidentForm(event)">
+        <input type="hidden" id="modal-id">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Curso</label>
+            <select id="modal-course" onchange="updateStudentsList()" required>
+              <option value="">Seleccionar...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Alumno</label>
+            <select id="modal-student" required><option value="">Seleccionar curso primero</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Categoría</label>
+            <select id="modal-category" required>
+              <option value="Conducta">Conducta</option>
+              <option value="Asistencia">Asistencia</option>
+              <option value="Rendimiento">Rendimiento</option>
+              <option value="Uniforme">Uniforme</option>
+              <option value="Respeto">Respeto</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Gravedad</label>
+            <select id="modal-severity" required>
+              <option value="Leve">Leve (-5 pts)</option>
+              <option value="Moderada">Moderada (-15 pts)</option>
+              <option value="Grave">Grave (-30 pts)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descripción del hecho</label>
+          <textarea id="modal-description" required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Acción institucional</label>
+          <input id="modal-action" type="text" placeholder="Ej: Llamada de atención verbal">
+        </div>
+        <label class="checkbox-row">
+          <input type="checkbox" id="modal-citation-toggle" onchange="toggleCitationFields()">
+          Requiere citación presencial del apoderado
+        </label>
+        <div id="modal-citation-fields" class="form-row hidden">
+          <div class="form-group"><label>Fecha</label><input type="date" id="modal-citation-date"></div>
+          <div class="form-group"><label>Hora</label><input type="time" id="modal-citation-time"></div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-text" type="button" onclick="closeModal('incident-modal')">Cancelar</button>
+      <button class="btn btn-primary" type="submit" form="incident-form">Guardar Incidencia</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: Timeline / Auditoría
+     ============================================================ -->
+<div id="timeline-modal" class="modal-overlay hidden">
+  <div class="modal-box modal-box--sm">
+    <div class="modal-header">
+      <h3><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Historial del Caso</h3>
+      <button class="modal-close" onclick="closeModal('timeline-modal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="timeline-content" class="timeline-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: Firma Digital
+     ============================================================ -->
+<div id="signature-modal" class="modal-overlay hidden">
+  <div class="modal-box modal-box--sm">
+    <div class="modal-header">
+      <h3><svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17c2-4 4-4 6 0s4 4 6 0 4-4 6 0"/><path d="M4 21h16"/></svg> Firma de Notificación</h3>
+      <button class="modal-close" onclick="closeModal('signature-modal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="sign-target-id">
+      <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:.75rem;">Firme dentro del recuadro para confirmar que ha recibido esta notificación.</p>
+      <div class="sig-canvas-wrap"><canvas id="sig-canvas"></canvas></div>
+      <button class="btn-text" style="margin-top:.5rem;" onclick="clearSigCanvas()">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l7-7 6 6-5 5H8l-4-4z"/><path d="M13 21H8"/></svg>
+        Limpiar Trazo
+      </button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-text" onclick="closeModal('signature-modal')">Cancelar</button>
+      <button class="btn btn-success" onclick="saveSignatureProcess()">Confirmar Firma</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Cambiar contraseña -->
+<div id="password-modal" class="modal-overlay hidden">
+  <div class="modal-box modal-box--sm">
+    <div class="modal-header">
+      <h3 id="password-title">Cambiar contraseña</h3>
+      <button id="password-close" class="modal-close" onclick="closeModal('password-modal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <form onsubmit="submitPassword(event)">
+      <div class="modal-body">
+        <p id="password-forced-note" class="note note--warn hidden">Por seguridad debes crear una contraseña nueva antes de continuar.</p>
+        <div class="form-group"><label for="pw-actual">Contraseña actual</label><input id="pw-actual" type="password" autocomplete="current-password" required></div>
+        <div class="form-group"><label for="pw-nueva">Contraseña nueva</label><input id="pw-nueva" type="password" autocomplete="new-password" required minlength="8"></div>
+        <div class="form-group"><label for="pw-repetir">Repetir contraseña nueva</label><input id="pw-repetir" type="password" autocomplete="new-password" required minlength="8"></div>
+        <p class="note">Mínimo 8 caracteres, con letras y números.</p>
+        <div id="pw-error" class="login-error hidden" role="alert"></div>
+      </div>
+      <div class="modal-footer">
+        <button id="password-cancel" class="btn-text" type="button" onclick="closeModal('password-modal')">Cancelar</button>
+        <button class="btn btn-primary" type="submit">Guardar contraseña</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: Nuevo usuario -->
+<div id="user-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>Nuevo usuario</h3>
+      <button class="modal-close" onclick="closeModal('user-modal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <form onsubmit="saveUserForm(event)">
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group"><label>Perfil</label>
+            <select id="nu-rol" onchange="toggleUserCis()" required>
+              <option value="docente">Docente / Directivo</option>
+              <option value="padre">Padre / Apoderado</option>
+              <option value="alumno">Alumno</option>
+              <option value="admin">Administración</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Nombre completo</label><input id="nu-nombre" type="text" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>Usuario (opcional para alumno/apoderado)</label><input id="nu-usuario" type="text" autocomplete="off"></div>
+          <div class="form-group"><label>Contraseña (vacío = se genera una)</label><input id="nu-pass" type="text" autocomplete="off"></div>
+        </div>
+        <div id="nu-cis-wrap" class="form-group hidden">
+          <label id="nu-cis-label">CI del alumno</label>
+          <input id="nu-cis" type="text" placeholder="Ej: 1234567  (varios hijos: 1234567 7654321)">
+        </div>
+        <p class="note">El alumno debe existir antes (importa la lista en la pestaña "Alumnos y cursos"). El usuario entrará con una contraseña temporal y deberá cambiarla.</p>
+        <div id="nu-error" class="login-error hidden" role="alert"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-text" type="button" onclick="closeModal('user-modal')">Cancelar</button>
+        <button class="btn btn-primary" type="submit">Crear usuario</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: Credencial generada -->
+<div id="cred-modal" class="modal-overlay hidden">
+  <div class="modal-box modal-box--sm">
+    <div class="modal-header">
+      <h3 id="cred-title">Credenciales</h3>
+      <button class="modal-close" onclick="closeModal('cred-modal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="cred-box" class="cred-box"></div>
+      <p class="note note--warn">Anótala o entrégala ahora: por seguridad no se vuelve a mostrar. Deberá cambiarla al ingresar.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-text" onclick="copyCred()">Copiar</button>
+      <button class="btn btn-primary" onclick="closeModal('cred-modal')">Listo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Importar CSV -->
+<div id="import-modal" class="modal-overlay hidden">
+  <div class="modal-box modal-box--lg">
+    <div class="modal-header">
+      <h3 id="import-title">Importar</h3>
+      <button class="modal-close" onclick="closeModal('import-modal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p id="import-help" class="note"></p>
+      <button class="btn-text" type="button" onclick="downloadTemplate()">Descargar plantilla de ejemplo</button>
+      <div class="form-group" style="margin-top:.75rem;"><label>Archivo CSV (se acepta el de Excel: Guardar como → CSV)</label><input id="import-file" type="file" accept=".csv,text/csv,text/plain"></div>
+      <div id="import-result" class="result-box"></div>
+    </div>
+    <div class="modal-footer">
+      <button id="import-download" class="btn-text hidden" onclick="downloadCreds()">Descargar credenciales (CSV)</button>
+      <button class="btn-text" onclick="closeModal('import-modal')">Cerrar</button>
+      <button id="import-run" class="btn btn-primary" onclick="runImport()">Importar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Ver firma -->
+<div id="firma-modal" class="modal-overlay hidden">
+  <div class="modal-box modal-box--sm">
+    <div class="modal-header">
+      <h3>Firma del apoderado</h3>
+      <button class="modal-close" onclick="closeModal('firma-modal')">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <img id="firma-img" class="sig-preview" alt="Firma">
+      <p id="firma-info" class="note"></p>
+    </div>
+  </div>
+</div>
+
+<div id="printable-report">
+  <div class="print-title">Ficha de Incidencia Escolar</div>
+  <div class="print-sub">Núcleo Educativo Las Gamas · Reporte generado por EduControl</div>
+  <div class="print-grid">
+    <div><strong>N° de caso</strong><span id="print-id"></span></div>
+    <div><strong>Fecha</strong><span id="print-date"></span></div>
+    <div><strong>Alumno</strong><span id="print-student"></span></div>
+    <div><strong>Curso</strong><span id="print-course"></span></div>
+    <div><strong>Categoría</strong><span id="print-cat"></span></div>
+    <div><strong>Gravedad</strong><span id="print-sev"></span></div>
+  </div>
+  <div class="print-block"><strong>Descripción del hecho</strong><span id="print-desc"></span></div>
+  <div class="print-block"><strong>Acción institucional</strong><span id="print-act"></span></div>
+  <div class="print-signature">Firma del Apoderado</div>
+</div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
